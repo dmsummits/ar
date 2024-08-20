@@ -60,18 +60,25 @@
         const marker = new THREE.Group();
         scene.add(marker);
 
+        // Use your own pattern file URL
         new THREEx.ArMarkerControls(arToolkitContext, marker, {
             type: 'pattern',
-            patternUrl: 'bg.patt',
+            patternUrl: 'https://yourdomain.com/path/to/your-pattern.patt',  // Replace with your pattern URL
         });
 
         // Load the GLB model using GLTFLoader
         const loader = new THREE.GLTFLoader();
-        loader.load('test.glb', function(gltf) {
+        loader.load('https://yourdomain.com/path/to/your-model.glb', function(gltf) {
+            gltf.scene.scale.set(0.1, 0.1, 0.1);  // Scale down the model
+            gltf.scene.position.set(0, 0, 0);  // Center the model
             marker.add(gltf.scene);
         }, undefined, function(error) {
-            console.error(error);
+            console.error('Error loading model:', error);
         });
+
+        // Add a simple cube for debugging
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+        marker.add(cube);  // Adds a red cube to the marker for visibility
 
         // Animation loop
         function animate() {
