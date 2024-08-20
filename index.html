@@ -10,15 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
     <!-- Include AR.js -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar-threex.js"></script>
-    <!-- Include Three.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-<!-- Include GLTFLoader -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
-
 </head>
 <body>
-    <!-- Your AR.js and Three.js code here -->
     <script>
         // Create a Three.js scene
         const scene = new THREE.Scene();
@@ -66,15 +59,15 @@
         const marker = new THREE.Group();
         scene.add(marker);
 
-        // Use your own pattern file URL
         new THREEx.ArMarkerControls(arToolkitContext, marker, {
             type: 'pattern',
             patternUrl: 'bg.patt',  // Replace with your pattern URL
         });
 
         // Load the GLB model using GLTFLoader
-        const loader = new THREE.GLTFLoader();
+        const loader = new THREE.GLTFLoader();  // Ensure this line is correct
         loader.load('test.glb', function(gltf) {
+            console.log('Model loaded successfully');
             gltf.scene.scale.set(0.1, 0.1, 0.1);  // Scale down the model
             gltf.scene.position.set(0, 0, 0);  // Center the model
             marker.add(gltf.scene);
