@@ -3,100 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web AR 3D Model Example</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.min.js"></script>
+    <title>Web AR Example</title>
+    <!-- Include Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/three.js/build/ar.min.js"></script>
-
+    <!-- Include GLTFLoader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- Include AR.js -->
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar-threex.js"></script>
 </head>
-<body style="margin: 0; overflow: hidden;">
-<a-scene embedded arjs>
-    <!-- Marker that triggers the AR experience -->
-    <a-marker preset="hiro">
-        <!-- Loading a 3D GLTF model -->
-        <a-entity gltf-model="url(test.glb)" 
-                  scale="0.5 0.5 0.5" 
-                  position="0 0 0"
-                  rotation="0 0 0">
-        </a-entity>
-    </a-marker>
-    <a-entity camera></a-entity>
-</a-scene>
-<script>
-// Initialize the scene
-const scene = new THREE.Scene();
+<body>
+    <!-- Your AR.js and Three.js code here -->
+    <script>
+        // Create a Three.js scene
+        const scene = new THREE.Scene();
 
-// Initialize the camera
-const camera = new THREE.Camera();
-scene.add(camera);
+        // Create a camera
+        const camera = new THREE.Camera();
+        scene.add(camera);
 
-// Setup the WebGLRenderer
-const renderer = new THREE.WebGLRenderer({ alpha: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+        // Setup the WebGLRenderer
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-// Setup AR.js
-const arToolkitSource = new THREEx.ArToolkitSource({
-    sourceType: 'webcam',
-});
+        // Setup AR.js
+        const arToolkitSource = new THREEx.ArToolkitSource({
+            sourceType: 'webcam',
+        });
 
-arToolkitSource.init(function onReady() {
-    onResize();
-});
+        arToolkitSource.init(function onReady() {
+            onResize();
+        });
 
-// Handle resize event
-window.addEventListener('resize', function () {
-    onResize();
-});
+        window.addEventListener('resize', function () {
+            onResize();
+        });
 
-function onResize() {
-    arToolkitSource.onResize();
-    arToolkitSource.copySizeTo(renderer.domElement);
-    if (arToolkitContext.arController !== null) {
-        arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
-    }
-}
+        function onResize() {
+            arToolkitSource.onResize();
+            arToolkitSource.copySizeTo(renderer.domElement);
+            if (arToolkitContext.arController !== null) {
+                arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
+            }
+        }
 
-// Create AR.js context
-const arToolkitContext = new THREEx.ArToolkitContext({
-    cameraParametersUrl: 'https://raw.githack.com/AR-js-org/AR.js/master/data/data/camera_para.dat',
-    detectionMode: 'mono',
-});
+        const arToolkitContext = new THREEx.ArToolkitContext({
+            cameraParametersUrl: 'https://raw.githack.com/AR-js-org/AR.js/master/data/data/camera_para.dat',
+            detectionMode: 'mono',
+        });
 
-// Initialize AR.js context
-arToolkitContext.init(function onCompleted() {
-    camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
-});
+        arToolkitContext.init(function onCompleted() {
+            camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+        });
 
-// Create a marker and add it to the scene
-const marker = new THREE.Group();
-scene.add(marker);
+        // Create an AR.js marker and add it to the scene
+        const marker = new THREE.Group();
+        scene.add(marker);
 
-const markerControls = new THREEx.ArMarkerControls(arToolkitContext, marker, {
-    type: 'pattern',
-    patternUrl: 'bg.patt',
-});
+        new THREEx.ArMarkerControls(arToolkitContext, marker, {
+            type: 'pattern',
+            patternUrl: 'bg.patt',
+        });
 
-// Add your 3D model or any content to the marker
-const loader = new THREE.GLTFLoader();
-loader.load('test.glb', function (gltf) {
-    marker.add(gltf.scene);
-});
+        // Load the GLB model using GLTFLoader
+        const loader = new THREE.GLTFLoader();
+        loader.load('test.glb', function(gltf) {
+            marker.add(gltf.scene);
+        }, undefined, function(error) {
+            console.error(error);
+        });
 
-// Animation loop
-function animate() {
-    requestAnimationFrame(animate);
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
 
-    if (arToolkitSource.ready !== false) {
-        arToolkitContext.update(arToolkitSource.domElement);
-    }
+            if (arToolkitSource.ready !== false) {
+                arToolkitContext.update(arToolkitSource.domElement);
+            }
 
-    renderer.render(scene, camera);
-}
-animate();
-
-
-</script>
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
 </body>
 </html>
