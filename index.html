@@ -1,95 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web AR Example</title>
-    <!-- Include Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Include GLTFLoader -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
-    <!-- Include AR.js -->
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar-threex.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!-- Include the model-viewer library -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
 </head>
-<body>
-    <script>
-        // Create a Three.js scene
-        const scene = new THREE.Scene();
+<body >
+  <model-viewer id="hotspot-camera-view-demo" 
+                src="Bike Test image.glb" 
+                alt="Thor and the Midgard Serpent" 
+                camera-controls 
+                touch-action="none" 
+                camera-orbit="-8.142746deg 68.967deg 0.6179899m" 
+                camera-target="-0.003m 0.0722m 0.0391m" 
+                field-of-view="45deg" 
+                min-field-of-view="25deg" 
+                max-field-of-view="45deg" 
+                interpolation-decay="200" 
+                min-camera-orbit="auto auto 5%" 
+                poster="https://www.airdryer.in/assets/images/new-files/tailormade/blower-reactivated.webp" 
+                ar style="margin-top: 50px;margin-left: 40px;width: 1288px;
+    height: 526px;">
+    <!-- Hotspot Buttons -->
+    <button class="view-button" 
+    slot="hotspot-0" 
+    data-position="0.1m 0.2m 0.3m" 
+    data-normal="0 1 0" 
+    data-orbit="45deg 30deg 1m" 
+    data-target="0.1m 0.1m 0.1m">
+The Fighters
+</button>
 
-        // Create a camera
-        const camera = new THREE.Camera();
-        scene.add(camera);
 
-        // Setup the WebGLRenderer
-        const renderer = new THREE.WebGLRenderer({ alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
 
-        // Setup AR.js
-        const arToolkitSource = new THREEx.ArToolkitSource({
-            sourceType: 'webcam',
-        });
 
-        arToolkitSource.init(function onReady() {
-            onResize();
-        });
-
-        window.addEventListener('resize', function () {
-            onResize();
-        });
-
-        function onResize() {
-            arToolkitSource.onResize();
-            arToolkitSource.copySizeTo(renderer.domElement);
-            if (arToolkitContext.arController !== null) {
-                arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
-            }
-        }
-
-        const arToolkitContext = new THREEx.ArToolkitContext({
-            cameraParametersUrl: 'https://raw.githack.com/AR-js-org/AR.js/master/data/data/camera_para.dat',
-            detectionMode: 'mono',
-        });
-
-        arToolkitContext.init(function onCompleted() {
-            camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
-        });
-
-        // Create an AR.js marker and add it to the scene
-        const marker = new THREE.Group();
-        scene.add(marker);
-
-        new THREEx.ArMarkerControls(arToolkitContext, marker, {
-            type: 'pattern',
-            patternUrl: 'bg.patt',
-        });
-
-        // Load the GLB model using GLTFLoader
-        const loader = new THREE.GLTFLoader();
-        loader.load('test.glb', function(gltf) {
-            console.log('Model loaded successfully');
-            gltf.scene.scale.set(0.1, 0.1, 0.1); // Adjust the scale if needed
-            gltf.scene.position.set(0, 0, 0);   // Position the model
-            marker.add(gltf.scene);              // Add the model to the marker
-        }, undefined, function(error) {
-            console.error('Error loading model:', error);
-        });
-
-        // Add a simple cube for debugging
-        const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-        marker.add(cube);
-
-        // Animation loop
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if (arToolkitSource.ready !== false) {
-                arToolkitContext.update(arToolkitSource.domElement);
-            }
-
-            renderer.render(scene, camera);
-        }
-        animate();
-    </script>
+    <!-- Your buttons go here -->
+  </model-viewer>
+  
+  <script type="module">
+    const modelViewer2 = document.querySelector("#hotspot-camera-view-demo");
+    const annotationClicked = (annotation) => {
+      let dataset = annotation.dataset;
+      modelViewer2.cameraTarget = dataset.target;
+      modelViewer2.cameraOrbit = dataset.orbit;
+      modelViewer2.fieldOfView = '45deg';
+    }
+  
+    modelViewer2.querySelectorAll('button').forEach((hotspot) => {
+      hotspot.addEventListener('click', () => annotationClicked(hotspot));
+    });
+  </script>
+  
+  <style type="text/css">
+    .view-button {
+        background: #fff;
+        border-radius: 4px;
+        border: none;
+        box-sizing: border-box;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+        color: rgba(0, 0, 0, 0.8);
+        display: block;
+        font-family: Futura, Helvetica Neue, sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        max-width: 128px;
+        overflow-wrap: break-word;
+        padding: 0.5em 1em;
+        position: absolute;
+        width: max-content;
+        height: max-content;
+        transform: translate3d(-50%, -50%, 0);
+      }
+  </style>
 </body>
 </html>
